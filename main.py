@@ -107,26 +107,26 @@ while running:
             if event.key == pygame.K_c:
                 center = center_of_mass()
                 tracking = -1
-            if event.key == pygame.K_0:
+            if event.key == pygame.K_0 or event.key == pygame.K_KP0:
                 tracking = -1
                 center = (WIDTH // 2, HEIGHT // 2)
-            if event.key == pygame.K_1:
+            if event.key == pygame.K_1 or event.key == pygame.K_KP1:
                 tracking = 0
-            if event.key == pygame.K_2:
+            if event.key == pygame.K_2 or event.key == pygame.K_KP2:
                 tracking = 1
-            if event.key == pygame.K_3:
+            if event.key == pygame.K_3 or event.key == pygame.K_KP3:
                 tracking = 2
-            if event.key == pygame.K_4:
+            if event.key == pygame.K_4 or event.key == pygame.K_KP4:
                 tracking = 3
-            if event.key == pygame.K_5:
+            if event.key == pygame.K_5 or event.key == pygame.K_KP5:
                 tracking = 4
-            if event.key == pygame.K_6:
+            if event.key == pygame.K_6 or event.key == pygame.K_KP6:
                 tracking = 5
-            if event.key == pygame.K_7:
+            if event.key == pygame.K_7 or event.key == pygame.K_KP7:
                 tracking = 6
-            if event.key == pygame.K_8:
+            if event.key == pygame.K_8 or event.key == pygame.K_KP8:
                 tracking = 7
-            if event.key == pygame.K_9:
+            if event.key == pygame.K_9 or event.key == pygame.K_KP9:
                 tracking = 0
 
     for body in bodies:
