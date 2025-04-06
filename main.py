@@ -1,18 +1,26 @@
 import pygame
 import math
 import random
+import sys
 
 # Good values to use:
 # Mass for bodies that need to interact with eachother: 5*10^3- 5*10^4
 # Mass for star: 5*10^5+
 # Distance of planet from a star is best > 200 and velocity > 10
 
+args = sys.argv
+search = False
 
-pygame.init()
-screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
-WIDTH, HEIGHT = screen.get_width(), screen.get_height()
-trail_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+if (len(args) > 1) and args[1] == "search":
+    search = True
 
+if not search:
+    pygame.init()
+    screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+    WIDTH, HEIGHT = screen.get_width(), screen.get_height()
+    trail_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+else:
+    WIDTH, HEIGHT = 1920, 1080
 center = (WIDTH // 2, HEIGHT // 2)
 
 clock = pygame.time.Clock()
@@ -44,8 +52,7 @@ class Body:
         self.trail = []
 
     def draw(self):
-        self.x += self.vx
-        self.y += self.vy
+        self.update_pos()
         self.trail.append((self.x, self.y))
         if len(self.trail) > 255:
             self.trail.pop(0)
@@ -78,12 +85,14 @@ class Body:
                 self.vx += ax
                 self.vy += ay
 
+    def update_pos(self):
+        self.x += self.vx
+        self.y += self.vy
 
-bodies = [
-    Body(50000, 25, 500, 500, 0, 0, (255, 0, 0)),
-    Body(100, 10, 700, 500, 0, 12, (0, 255, 0)),
-    Body(100, 10, 700, 700, -9, 9, (0, 0, 255)),
-]
+    def __str__(self):
+        return f"Body({self.mass}, {self.radius}, {self.x}, {self.y}, {self.vx}, {self.vy}, {self.color})"
+
+bodies = [Body(1000, 10, 1526, 525, -0.9269415831017247, 0.5649670274804586, (191, 255, 24)), Body(1000, 10, 583, 589, 0.09663800781840459, -0.7866388506133124, (110, 255, 118)), Body(1000, 10, 1301, 720, 0.7430155711177553, 0.9697394675779754, (255, 214, 130))]
 
 colors = [
     (255, 0, 0),
@@ -123,6 +132,8 @@ def generate_randoms(amount):
             colors[i]
         ) for i in range(amount)
     ]
+    mapped = list(map(str, bodies))
+    return str(mapped)
 
 
 def center_of_mass():
@@ -133,7 +144,7 @@ def center_of_mass():
 
 tracking = -1
 running = True
-while running:
+while running and not search:
     screen.fill((0, 0, 0))
     trail_surface.fill((0, 0, 0, 0))
 
@@ -181,3 +192,34 @@ while running:
 
     pygame.display.flip()
     clock.tick(fps)
+
+
+def check_dist():
+    max_dist = 0
+    for i in range(len(bodies)):
+        for j in range(i + 1, len(bodies)):
+            dist = (bodies[i].x - bodies[j].x) ** 2 + (bodies[i].y - bodies[j].y) ** 2
+            if dist > max_dist:
+                max_dist = dist
+    return max_dist < WIDTH ** 2
+
+
+counter = 0
+prev = generate_randoms(3)
+while running and search:
+    for body in bodies:
+        body.update_speed()
+    for body in bodies:
+        body.update_pos()
+
+    if not check_dist():
+        if counter > 1000:
+            print(f"Found stable configuration for {counter} steps!")
+        counter = 0
+        prev = generate_randoms(3)
+    else:
+        counter += 1
+        if counter > 10e5:
+            print(f"Possible infinite stable configuration!:\n{prev}")
+            counter = 0
+            prev = generate_randoms(3)
