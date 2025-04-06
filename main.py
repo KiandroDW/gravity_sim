@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 
 # Good values to use:
 # Mass for bodies that need to interact with eachother: 5*10^3- 5*10^4
@@ -84,6 +85,45 @@ bodies = [
     Body(100, 10, 700, 700, -9, 9, (0, 0, 255)),
 ]
 
+colors = [
+    (255, 0, 0),
+    (255, 128,  0),
+    (255, 255, 0),
+    (128, 255, 0),
+    (0, 255, 0),
+    (0, 255, 128),
+    (0, 255, 255),
+    (0, 128, 255),
+    (0, 0, 255),
+    (128, 0, 255),
+    (255, 0, 255),
+    (255, 0, 128)
+]
+
+
+def generate_randoms(amount):
+    colors = []
+    for i in range(amount):
+        i_255 = random.randint(0, 2)
+        if i_255 == 0:
+            colors.append((255, random.randint(0, 255), random.randint(0, 255)))
+        elif i_255 == 1:
+            colors.append((random.randint(0, 255), 255, random.randint(0, 255)))
+        else:
+            colors.append((random.randint(0, 255), random.randint(0, 255), 255))
+    global bodies
+    bodies = [
+        Body(
+            1000,
+            10,
+            random.randint(WIDTH // 2 - 600, WIDTH // 2 + 600),
+            random.randint(HEIGHT // 2 - 400, HEIGHT // 2 + 400),
+            random.random() * 2 - 1,
+            random.random() * 2 - 1,
+            colors[i]
+        ) for i in range(amount)
+    ]
+
 
 def center_of_mass():
     x_com = sum([i.mass * i.x for i in bodies]) / sum([i.mass for i in bodies])
@@ -127,7 +167,9 @@ while running:
             if event.key == pygame.K_8 or event.key == pygame.K_KP8:
                 tracking = 7
             if event.key == pygame.K_9 or event.key == pygame.K_KP9:
-                tracking = 0
+                tracking = 8
+            if event.key == pygame.K_r:
+                generate_randoms(random.randint(2, 50))
 
     for body in bodies:
         body.update_speed()
