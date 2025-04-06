@@ -9,10 +9,10 @@ import math
 
 pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
-trail_surface = pygame.Surface(
-    (screen.get_width(), screen.get_height()),
-    pygame.SRCALPHA
-)
+WIDTH, HEIGHT = screen.get_width(), screen.get_height()
+trail_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+
+offset = (0, 0)
 
 clock = pygame.time.Clock()
 
@@ -54,13 +54,13 @@ class Body:
             pygame.draw.circle(
                 trail_surface,
                 op_col,
-                item,
+                (item[0] + offset[0], item[1] + offset[1]),
                 1
             )
 
         screen.blit(trail_surface, (0, 0))
 
-        pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+        pygame.draw.circle(screen, self.color, (self.x + offset[0], self.y + offset[1]), self.radius)
 
     def update_speed(self):
         for body in bodies:
@@ -85,6 +85,12 @@ bodies = [
 ]
 
 
+def center_of_mass():
+    x_com = sum([i.mass * i.x for i in bodies]) / sum([i.mass for i in bodies])
+    y_com = sum([i.mass * i.y for i in bodies]) / sum([i.mass for i in bodies])
+    return WIDTH // 2 - x_com, HEIGHT // 2 - y_com
+
+
 running = True
 while running:
     screen.fill((0, 0, 0))
@@ -97,6 +103,8 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+            if event.key == pygame.K_c:
+                offset = center_of_mass()
 
     for body in bodies:
         body.update_speed()
