@@ -158,6 +158,9 @@ while running and not search:
             if event.key == pygame.K_c:
                 center = center_of_mass()
                 tracking = -1
+            if event.key == pygame.K_f:
+                center = center_of_mass()
+                tracking = -2
             if event.key == pygame.K_0 or event.key == pygame.K_KP0:
                 tracking = -1
                 center = (WIDTH // 2, HEIGHT // 2)
@@ -189,6 +192,9 @@ while running and not search:
 
     if tracking >= 0 and len(bodies) > tracking:
         center = (bodies[tracking].x, bodies[tracking].y)
+
+    if tracking == -2:
+        center = center_of_mass()
 
     pygame.display.flip()
     clock.tick(fps)
