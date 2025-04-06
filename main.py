@@ -12,7 +12,7 @@ screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
 WIDTH, HEIGHT = screen.get_width(), screen.get_height()
 trail_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 
-offset = (0, 0)
+center = (WIDTH // 2, HEIGHT // 2)
 
 clock = pygame.time.Clock()
 
@@ -54,13 +54,13 @@ class Body:
             pygame.draw.circle(
                 trail_surface,
                 op_col,
-                (item[0] + offset[0], item[1] + offset[1]),
+                (item[0] + WIDTH // 2 - center[0], item[1] + HEIGHT // 2 - center[1]),
                 1
             )
 
         screen.blit(trail_surface, (0, 0))
 
-        pygame.draw.circle(screen, self.color, (self.x + offset[0], self.y + offset[1]), self.radius)
+        pygame.draw.circle(screen, self.color, (self.x + WIDTH // 2 - center[0], self.y + HEIGHT // 2 - center[1]), self.radius)
 
     def update_speed(self):
         for body in bodies:
@@ -88,9 +88,10 @@ bodies = [
 def center_of_mass():
     x_com = sum([i.mass * i.x for i in bodies]) / sum([i.mass for i in bodies])
     y_com = sum([i.mass * i.y for i in bodies]) / sum([i.mass for i in bodies])
-    return WIDTH // 2 - x_com, HEIGHT // 2 - y_com
+    return x_com, y_com
 
 
+tracking = -1
 running = True
 while running:
     screen.fill((0, 0, 0))
@@ -104,12 +105,37 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
             if event.key == pygame.K_c:
-                offset = center_of_mass()
+                center = center_of_mass()
+                tracking = -1
+            if event.key == pygame.K_0:
+                tracking = -1
+                center = (WIDTH // 2, HEIGHT // 2)
+            if event.key == pygame.K_1:
+                tracking = 0
+            if event.key == pygame.K_2:
+                tracking = 1
+            if event.key == pygame.K_3:
+                tracking = 2
+            if event.key == pygame.K_4:
+                tracking = 3
+            if event.key == pygame.K_5:
+                tracking = 4
+            if event.key == pygame.K_6:
+                tracking = 5
+            if event.key == pygame.K_7:
+                tracking = 6
+            if event.key == pygame.K_8:
+                tracking = 7
+            if event.key == pygame.K_9:
+                tracking = 0
 
     for body in bodies:
         body.update_speed()
     for body in bodies:
         body.draw()
+
+    if tracking >= 0 and len(bodies) > tracking:
+        center = (bodies[tracking].x, bodies[tracking].y)
 
     pygame.display.flip()
     clock.tick(fps)
