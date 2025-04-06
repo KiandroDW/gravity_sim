@@ -15,5 +15,8 @@ run `main.py`: `python3 main.py`
 `ESC` to close the program
 `0` to return the focus to the original place.
 `1-9` to select the nth body as focus if it exists. Else it leaves the focus on the last position.
+`R` to generate a random configuration of 2-50 equal mass bodies
+
+![example image of the simulator](./random.png)
 
 Also check out [this project](https://github.com/BWindey/PlanetSim) made by my friend in C3!
