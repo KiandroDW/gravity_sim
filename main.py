@@ -2,6 +2,7 @@ import pygame
 import math
 import random
 import sys
+import time
 
 # Good values to use:
 # Mass for bodies that need to interact with eachother: 5*10^3- 5*10^4
@@ -57,12 +58,12 @@ class Body:
         if len(self.trail) > 255:
             self.trail.pop(0)
 
-        for index, item in enumerate(self.trail):
+        for index in range(len(self.trail)):
             op_col = (self.color[0], self.color[1], self.color[2], index)
             pygame.draw.circle(
                 trail_surface,
                 op_col,
-                (item[0] + WIDTH // 2 - center[0], item[1] + HEIGHT // 2 - center[1]),
+                (self.trail[index][0] + WIDTH // 2 - center[0], self.trail[index][1] + HEIGHT // 2 - center[1]),
                 1
             )
 
@@ -92,7 +93,7 @@ class Body:
     def __str__(self):
         return f"Body({self.mass}, {self.radius}, {self.x}, {self.y}, {self.vx}, {self.vy}, {self.color})"
 
-bodies = [Body(1000, 10, 1526, 525, -0.9269415831017247, 0.5649670274804586, (191, 255, 24)), Body(1000, 10, 583, 589, 0.09663800781840459, -0.7866388506133124, (110, 255, 118)), Body(1000, 10, 1301, 720, 0.7430155711177553, 0.9697394675779754, (255, 214, 130))]
+bodies = [Body(1000, 10, 1169, 908, 0.6504895921664646, -0.9143752642893779, (35, 105, 255)), Body(1000, 10, 629, 537, 0.7081447763115003, 0.5825628241052676, (255, 16, 153)), Body(1000, 10, 706, 695, -0.9854231495023225, 0.5343663618799901, (255, 62, 79))]
 
 colors = [
     (255, 0, 0),
@@ -207,11 +208,12 @@ def check_dist():
             dist = (bodies[i].x - bodies[j].x) ** 2 + (bodies[i].y - bodies[j].y) ** 2
             if dist > max_dist:
                 max_dist = dist
-    return max_dist < WIDTH ** 2
+    return max_dist < (HEIGHT * 2 / 3) ** 2
 
 
 counter = 0
 prev = generate_randoms(3)
+start = time.time()
 while running and search:
     for body in bodies:
         body.update_speed()
@@ -219,13 +221,15 @@ while running and search:
         body.update_pos()
 
     if not check_dist():
-        if counter > 1000:
+        if counter > 216000:    # everything longer than 60 minutes
             print(f"Found stable configuration for {counter} steps!")
         counter = 0
         prev = generate_randoms(3)
+        start = time.time()
     else:
         counter += 1
-        if counter > 10e5:
-            print(f"Possible infinite stable configuration!:\n{prev}")
+        if counter > 5184000:  # everything longer than 24 hour
+            print(f"Possible infinite stable configuration! (took {time.time() - start}s):\n{prev}")
             counter = 0
             prev = generate_randoms(3)
+            start = time.time()
